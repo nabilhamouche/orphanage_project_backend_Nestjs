@@ -47,4 +47,6 @@ model Orphan {
   age         Int
   orphanage   Orphanage @relation(fields: [orphanageId], references: [id])
   orphanageId String
+  createdAt DateTime @default(now())  
+  updatedAt DateTime @updatedAt
 }

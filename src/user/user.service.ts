@@ -72,7 +72,7 @@ async getUsers() {
 async updateUser(id: string, data: UserDtoOrphanage) {
     const updatedUser = await this.prisma.user.update({
         where: { id },
-        data: data.user, // Update only the user fields
+        data: data.user, 
     });
 
     // If role is ORPHANAGE, update orphanage details
