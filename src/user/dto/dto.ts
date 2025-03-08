@@ -1,43 +1,22 @@
-import { IsEmail, IsNotEmpty, IsString,IsOptional,IsEnum,IsUUID,ValidateNested} from 'class-validator';
-import { Type } from 'class-transformer';
-import { Role } from '@prisma/client';
+import { IsEmail, IsString, MinLength, IsEnum } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 
-export class UserDto {
-    @IsEmail()
-    email: string;
+export class CreateUserDto {
+  @ApiProperty()
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    // @MinLength(6)
-    password: string;
+  @ApiProperty()
+  @IsString()
+  @MinLength(6)
+  password: string;
 
-    @IsEnum(Role)
-    role: Role;
-}
-export class OrphanageDto {
-    @IsOptional()
-    @IsUUID()
-    id?: string; 
+  @ApiProperty()
+  @IsString()
+  name: string;
 
-    @IsString()
-    name: string;
-
-    @IsOptional()
-    @IsString()
-    address?: string;
-
-    @IsOptional()
-    @IsString()
-    phone?: string;
-
-    @IsUUID()
-    userId: string;
-}
-export class UserDtoOrphanage {
-    @ValidateNested()
-    @Type(() => UserDto)
-    user:UserDto;
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => OrphanageDto)
-    orphanage?: OrphanageDto;
+  @ApiProperty({ enum: UserRole })
+  @IsEnum(UserRole)
+  role: UserRole;
 }

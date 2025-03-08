@@ -12,41 +12,84 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-enum Role {
+enum UserRole {
   Normal
   ADMIN
-  ORPHANAGE
+  Owner_ORPHANAGE
+}
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+enum AdoptionStatus {
+  AVAILABLE
+  IN_PROGRESS
+  ADOPTED
 }
 
 model User {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  password String
-  role     Role
-  orphanage Orphanage?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  name      String
+  role      UserRole
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  ownedOrphanages      Orphanage[]
+  adoptionApplications AdoptionApplication[] @relation("Adopter")
+
+  @@map("users")
 }
 
 model Orphanage {
-  id       String   @id @default(uuid())
-  name     String
-  address  String?
-  phone    String?
-  user     User     @relation(fields: [userId], references: [id])
-  userId   String   @unique
-  orphans  Orphan[]
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  location    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  createdAt DateTime @default(now())  
-  updatedAt DateTime @updatedAt  
+  // Relations
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+  orphans Orphan[] @relation("OrphanageOrphans")  // Ensure correct relation syntax
+  adoptionApplications AdoptionApplication[]
+
+  @@map("orphanages")
+}
+
+model AdoptionApplication {
+  id        String            @id @default(uuid())
+  status    ApplicationStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  // Relations
+  orphanage   Orphanage @relation(fields: [orphanageId], references: [id])
+  orphanageId String
+  adopter     User      @relation("Adopter", fields: [adopterId], references: [id])
+  adopterId   String
+
+  @@map("adoption_applications")
 }
 
 model Orphan {
   id          String    @id @default(uuid())
   name        String
   age         Int
-  orphanage   Orphanage @relation(fields: [orphanageId], references: [id])
+  gender      String  
+  dateOfBirth DateTime 
+  healthStatus String? // Any health issues or "Healthy"
+  specialNeeds String? // If applicable, mention disabilities or medical conditions
+  bio         String?  // Short story or description about the child
+  adoptionStatus AdoptionStatus @default(AVAILABLE) 
+  orphanage   Orphanage @relation("OrphanageOrphans", fields: [orphanageId], references: [id])
   orphanageId String
-  createdAt DateTime @default(now())  
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())  
+  updatedAt   DateTime @updatedAt
 }
+
+
