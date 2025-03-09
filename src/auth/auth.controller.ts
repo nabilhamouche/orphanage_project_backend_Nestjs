@@ -9,6 +9,7 @@ export class AuthController {
 constructor(private AuthService:AuthService) {}
 @Post('login')
   @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.UNAUTHORIZED)
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Login successful' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid credentials' })

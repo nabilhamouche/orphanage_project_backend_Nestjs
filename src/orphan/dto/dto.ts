@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, PartialType } from "@nestjs/swagger";
 import { IsDate, IsNumber, IsOptional, IsString,IsDateString,IsEnum } from "class-validator";
 import {AdoptionStatus} from '@prisma/client'
 export class CreateOrphanDto {
@@ -32,8 +32,11 @@ export class CreateOrphanDto {
     @IsString()
     @IsOptional()
     bio?: string;
+
     @IsEnum(AdoptionStatus)
     @ApiProperty()
     @IsOptional()
     adoptionStatus?:string;
 }
+
+export class UpdateOrphanDto extends PartialType(CreateOrphanDto){}

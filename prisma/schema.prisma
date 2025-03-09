@@ -38,8 +38,8 @@ model User {
   updatedAt DateTime   @updatedAt
 
   // Relations
-  ownedOrphanages      Orphanage[]
-  adoptionApplications AdoptionApplication[] @relation("Adopter")
+  ownedOrphanages      Orphanage[] @relation("ownedOrphanages", onDelete: Cascade)
+  adoptionApplications AdoptionApplication[] @relation("Adopter",onDelete: SetNull)
 
   @@map("users")
 }
@@ -54,8 +54,8 @@ model Orphanage {
 
   // Relations
   owner   User   @relation(fields: [ownerId], references: [id])
-  ownerId String
-  orphans Orphan[] @relation("OrphanageOrphans")  // Ensure correct relation syntax
+  ownerId String @unique
+  orphans Orphan[] @relation("OrphanageOrphans",onDelete: Cascade)  
   adoptionApplications AdoptionApplication[]
 
   @@map("orphanages")

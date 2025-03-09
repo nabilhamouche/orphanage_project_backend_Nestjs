@@ -2,7 +2,8 @@ import { Body, Controller, Delete, Get, Param, Post, Put ,Request, UseGuards} fr
 import { OrphangesService } from './orphanges.service';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { CreateOrphanageDto,UpdateOrphanageDto } from './dto';
-import { JwtAuthGuard } from 'src/auth/guard';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guard';
+import { Roles } from 'src/auth/decorator';
 
 @ApiTags('Orphanges')
 @Controller('orphanges')
@@ -10,9 +11,10 @@ export class OrphangesController {
     constructor(private orphangesService:OrphangesService){}
 
     @Post()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard,RolesGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new orphanage' })
+    @Roles()
     async create(@Body() createOrphanageDto:CreateOrphanageDto,@Request() req){
         return this.orphangesService.create(createOrphanageDto,req.user.id);
     }
