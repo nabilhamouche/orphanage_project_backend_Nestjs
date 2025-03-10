@@ -14,7 +14,7 @@ export class OrphangesController {
     @UseGuards(JwtAuthGuard,RolesGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Create a new orphanage' })
-    @Roles()
+    @Roles("Owner_ORPHANAGE")
     async create(@Body() createOrphanageDto:CreateOrphanageDto,@Request() req){
         return this.orphangesService.create(createOrphanageDto,req.user.id);
     }
@@ -32,18 +32,18 @@ export class OrphangesController {
     }
 
     @Put(':id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard,RolesGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Update an orphanage by id' })
-    @Roles()
+    @Roles("Owner_ORPHANAGE")
     async update(@Param('id') id:string,@Body() updateOrphange:UpdateOrphanageDto){
         return this.orphangesService.update(id,updateOrphange);
     }
     @Delete(':id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard,RolesGuard)
     @ApiBearerAuth()
     @ApiOperation({summary:'Delete an orphange by id'})
-    @Roles()
+    @Roles("Owner_ORPHANAGE")
     async remove(@Param('id') id:string){
         return this.orphangesService.remove(id);
     }

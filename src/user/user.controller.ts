@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param,UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param,UseGuards, HttpStatus, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto';
@@ -9,6 +9,7 @@ import { Roles } from 'src/auth/decorator';
 export class UserController {
     constructor(private usersService:UserService){}
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     @ApiOperation({ summary: 'Create a new user' })
     @ApiResponse({ status: 201, description: 'User created successfully' })
     @ApiResponse({ status: 409, description: 'Email already exists' })
@@ -19,6 +20,7 @@ export class UserController {
     @Get()
     @UseGuards(JwtAuthGuard,RolesGuard)
     @ApiBearerAuth()
+    @Roles("ADMIN")
     @ApiOperation({ summary: 'Get all users' })
     @ApiResponse({ status: 200, description: 'Return all users' })
     async findAll() {
@@ -26,8 +28,9 @@ export class UserController {
     }
   
     @Get(':id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard,RolesGuard)
     @ApiBearerAuth()
+    @Roles("ADMIN")
     @ApiOperation({ summary: 'Get a user by id' })
     @ApiResponse({ status: 200, description: 'Return a user' })
     async findOne(@Param('id') id: string) {
