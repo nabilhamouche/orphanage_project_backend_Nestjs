@@ -38,8 +38,8 @@ model User {
   updatedAt DateTime   @updatedAt
 
   // Relations
-  ownedOrphanages      Orphanage[] @relation("ownedOrphanages", onDelete: Cascade)
-  adoptionApplications AdoptionApplication[] @relation("Adopter",onDelete: SetNull)
+  ownedOrphanages      Orphanage[] @relation("ownedOrphanages")
+  adoptionApplications AdoptionApplication[] @relation("Adopter")
 
   @@map("users")
 }
@@ -53,9 +53,9 @@ model Orphanage {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  owner   User   @relation(fields: [ownerId], references: [id])
+  owner   User   @relation("ownedOrphanages", fields: [ownerId], references: [id])
   ownerId String @unique
-  orphans Orphan[] @relation("OrphanageOrphans",onDelete: Cascade)  
+  orphans Orphan[] @relation("OrphanageOrphans")
   adoptionApplications AdoptionApplication[]
 
   @@map("orphanages")
@@ -70,7 +70,7 @@ model AdoptionApplication {
   // Relations
   orphanage   Orphanage @relation(fields: [orphanageId], references: [id])
   orphanageId String
-  adopter     User      @relation("Adopter", fields: [adopterId], references: [id])
+  adopter     User      @relation("Adopter", fields: [adopterId], references: [id], onDelete: SetNull)
   adopterId   String
 
   @@map("adoption_applications")
@@ -82,14 +82,13 @@ model Orphan {
   age         Int
   gender      String  
   dateOfBirth DateTime 
-  healthStatus String? // Any health issues or "Healthy"
-  specialNeeds String? // If applicable, mention disabilities or medical conditions
-  bio         String?  // Short story or description about the child
-  adoptionStatus AdoptionStatus @default(AVAILABLE) 
-  orphanage   Orphanage @relation("OrphanageOrphans", fields: [orphanageId], references: [id])
-  orphanageId String
+  healthStatus String? 
+  specialNeeds String? 
+  bio         String?  
+  adoptionStatus AdoptionStatus? @default(AVAILABLE) 
   createdAt   DateTime @default(now())  
   updatedAt   DateTime @updatedAt
+  orphanage   Orphanage @relation("OrphanageOrphans", fields: [orphanageId], references: [id], onDelete: Cascade)
+  orphanageId String
 }
-
 

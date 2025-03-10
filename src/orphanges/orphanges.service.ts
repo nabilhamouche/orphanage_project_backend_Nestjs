@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrphanageDto, UpdateOrphanageDto } from './dto';
 
@@ -6,9 +6,23 @@ import { CreateOrphanageDto, UpdateOrphanageDto } from './dto';
 export class OrphangesService {
     constructor(private prisma:PrismaService){}
     async create(createOrphanageDto:CreateOrphanageDto,ownerId:string){
+        try{
         return this.prisma.orphanage.create({
          data:{...createOrphanageDto,ownerId,}
-        })}
+        })
+    }catch(error){
+        if(error.code === 'P2002'){
+            throw new HttpException(
+                'You can only own one orphanage.',
+                HttpStatus.BAD_REQUEST,
+              );
+        }
+        throw new HttpException(
+            'Something went wrong',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+        )
+    }
+    }
 
     async findAll(){
         return this.prisma.orphanage.findMany({

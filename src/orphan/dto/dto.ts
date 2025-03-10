@@ -34,9 +34,9 @@ export class CreateOrphanDto {
     bio?: string;
 
     @IsEnum(AdoptionStatus)
-    @ApiProperty()
+    @ApiProperty({ enum: AdoptionStatus })
     @IsOptional()
-    adoptionStatus?:string;
+    adoptionStatus?:AdoptionStatus;
 }
 
 export class UpdateOrphanDto extends PartialType(CreateOrphanDto){}

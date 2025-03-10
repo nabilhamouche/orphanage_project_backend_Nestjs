@@ -1,32 +1,50 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { OrphanService } from './orphan.service';
+import { CreateOrphanDto, UpdateOrphanDto } from './dto';
+import { ApiBearerAuth,ApiOperation } from '@nestjs/swagger';
+import { Roles } from 'src/auth/decorator';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guard';
 
 @Controller('orphan')
 export class OrphanController {
     constructor(private orphanservice : OrphanService){}
 
     @Post()
-    createOrphan(){
-        return this.orphanservice.createOrphan();
+    @UseGuards(JwtAuthGuard,RolesGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Create a new orphan' })
+    @Roles()
+    async createOrphan(@Body() createOrphanDto:CreateOrphanDto,@Req() req){
+        return this.orphanservice.createOrphan(createOrphanDto,req.user.id);
     }
     
     @Get()
-    getOrphans(){
+    @ApiOperation({ summary: 'Get all orphans' })
+    async getOrphans(){
         return this.orphanservice.getOrphans();
     }
 
     @Get(':id')
-    getOrphan(){
-        return this.orphanservice.getOrphan();
+    @ApiOperation({ summary: 'Get an orphan by id' })
+    async getOrphan(@Param('id') id:string){
+        return this.orphanservice.getOrphan(id);
     }
 
     @Put(':id')
-    updateOrphan(){
-        return this.orphanservice.updateOrphan();
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Update an orphan by id' })
+    @Roles()
+    updateOrphan(@Param('id') id:string,@Body() updateOrphanDto:UpdateOrphanDto){
+        return this.orphanservice.updateOrphan(id,updateOrphanDto);
     }
 
     @Delete(':id')
-    deleteOrphan(){
-        return this.orphanservice.deleteOrphan();
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({summary:'Delete an orphan by id'})
+    @Roles()
+    deleteOrphan(@Param('id') id:string){
+        return this.orphanservice.deleteOrphan(id);
     }
 }

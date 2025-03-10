@@ -35,6 +35,7 @@ export class OrphangesController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Update an orphanage by id' })
+    @Roles()
     async update(@Param('id') id:string,@Body() updateOrphange:UpdateOrphanageDto){
         return this.orphangesService.update(id,updateOrphange);
     }
@@ -42,6 +43,7 @@ export class OrphangesController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @ApiOperation({summary:'Delete an orphange by id'})
+    @Roles()
     async remove(@Param('id') id:string){
         return this.orphangesService.remove(id);
     }
